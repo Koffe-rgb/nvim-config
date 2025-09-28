@@ -41,7 +41,7 @@ local function get_lsp_name()
     else
         -- display LSP name of first client and number of the rest clients
         -- format: [lsp_name + 2]
-        return "[" .. lsp_clients[1] .. " + " .. (#lsp_clients - 1) .. "]"
+        return "[" .. lsp_clients[1] .. " +" .. (#lsp_clients - 1) .. "]"
     end
 end
 

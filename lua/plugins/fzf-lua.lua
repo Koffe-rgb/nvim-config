@@ -52,5 +52,12 @@ return {
             end,
             desc = "[/] Live Grep Current Buffer",
         },
+        {
+            "<leader>q",
+            function()
+                require("fzf-lua").quickfix()
+            end,
+            desc = "Open [Q]uickfix List",
+        },
     },
 }
