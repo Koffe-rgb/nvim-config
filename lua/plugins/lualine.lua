@@ -78,7 +78,14 @@ return {
                     icon = "󰘐",
                 },
                 "branch",
-                "diff",
+                {
+                    "diff",
+                    symbols = {
+                        added = " ",
+                        modified = " ",
+                        removed = " ",
+                    },
+                },
                 "diagnostics",
             },
             lualine_x = {
