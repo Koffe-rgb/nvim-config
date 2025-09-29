@@ -1,5 +1,13 @@
 ---- LSP CONFIG ----
 
+local function client_supports_method(client, method, bufnr)
+    if vim.fn.has("nvim-0.11") == 1 then
+        return client:supports_method(method, bufnr)
+    else
+        return client.supports_method(method, { bufnr = bufnr })
+    end
+end
+
 -- map keybindings
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("DefaultLspAttach", { clear = true }),
@@ -18,20 +26,45 @@ vim.api.nvim_create_autocmd("LspAttach", {
         map("<leader>gt", require("fzf-lua").lsp_typedefs, "[G]oto [T]ype Definition")
         map("K", vim.lsp.buf.hover, "Hover Documentation")
 
-        local function client_supports_method(client, method, bufnr)
-            if vim.fn.has("nvim-0.11") == 1 then
-                return client:supports_method(method, bufnr)
-            else
-                return client.supports_method(method, { bufnr = bufnr })
-            end
-        end
-
         local client = vim.lsp.get_client_by_id(event.data.client_id)
 
         if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+            vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+
             map("<leader>th", function()
                 vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
             end, "[T]oggle Inlay [H]ints")
+        end
+    end,
+})
+
+-- turn on code lens
+local codelens_augroup = vim.api.nvim_create_augroup("LSPCodeLens", { clear = true })
+
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = codelens_augroup,
+    callback = function(event)
+        local bufnr = event.buf
+        local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+        if client and client_supports_method(client, "textDocument/codeLens", bufnr) then
+            -- Refresh code lenses
+            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave", "TextChanged" }, {
+                group = codelens_augroup,
+                buffer = bufnr,
+                callback = function()
+                    -- Use defer to avoid refreshing too frequently
+                    vim.defer_fn(function()
+                        vim.lsp.codelens.refresh({ bufnr = bufnr })
+                    end, 100)
+                end,
+                desc = "Refresh LSP code lenses",
+            })
+
+            -- Initial refresh after a short delay
+            vim.defer_fn(function()
+                vim.lsp.codelens.refresh({ bufnr = bufnr })
+            end, 500)
         end
     end,
 })
@@ -50,23 +83,24 @@ vim.diagnostic.config({
         },
     } or {},
     -- Disabled for tiny-inline-diagnostics
-    -- virtual_text = {
-    --     source = "if_many",
-    --     spacing = 2,
-    --     format = function(diagnostic)
-    --         local diagnostic_message = {
-    --             [vim.diagnostic.severity.ERROR] = diagnostic.message,
-    --             [vim.diagnostic.severity.WARN] = diagnostic.message,
-    --             [vim.diagnostic.severity.INFO] = diagnostic.message,
-    --             [vim.diagnostic.severity.HINT] = diagnostic.message,
-    --         }
-    --         return diagnostic_message[diagnostic.severity]
-    --     end,
-    -- },
+    virtual_text = {
+        source = "if_many",
+        spacing = 2,
+        format = function(diagnostic)
+            local diagnostic_message = {
+                [vim.diagnostic.severity.ERROR] = diagnostic.message,
+                [vim.diagnostic.severity.WARN] = diagnostic.message,
+                [vim.diagnostic.severity.INFO] = diagnostic.message,
+                [vim.diagnostic.severity.HINT] = diagnostic.message,
+            }
+            return diagnostic_message[diagnostic.severity]
+        end,
+    },
 })
 
 return {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
         {
             "mason-org/mason.nvim",
@@ -86,10 +120,11 @@ return {
     config = function()
         local capabilities = require("blink.cmp").get_lsp_capabilities()
 
+        -- NOTE: add servers configurations as needed
         local servers = {
             clangd = require("plugins.lsp.clangd"),
             lua_ls = require("plugins.lsp.lua_ls"),
-            roslyn = require("plugins.lsp.roslyn"),
+            -- roslyn = require("plugins.lsp.roslyn"),
         }
 
         local ensure_installed = vim.tbl_keys(servers or {})

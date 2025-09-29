@@ -8,17 +8,23 @@ vim.keymap.set(
 
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
+-- disable arrows
 vim.keymap.set({ "n", "i", "v" }, "<left>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<right>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<up>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<down>", "<Nop>")
 
+-- window navigation
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
+-- build project with :make
 vim.keymap.set("n", "<leader>bb", "<cmd>make<CR>", { desc = "Build project" })
+
+vim.keymap.set("n", "<M-j>", "<cmd>cnext<CR>", { desc = "Next item on quickfix list" })
+vim.keymap.set("n", "<M-k>", "<cmd>cprev<CR>", { desc = "Next item on quickfix list" })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })

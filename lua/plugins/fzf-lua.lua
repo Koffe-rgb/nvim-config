@@ -39,11 +39,11 @@ return {
             desc = "[F]ind [H]elp",
         },
         {
-            "<leader>ds",
+            "<leader>da",
             function()
                 require("fzf-lua").diagnostics_workspace()
             end,
-            desc = "Open [D]iagnostics of Work[S]pace",
+            desc = "Open [D]iagnostics [A]ll",
         },
         {
             "<leader>/",
