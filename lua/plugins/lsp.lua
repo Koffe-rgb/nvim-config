@@ -65,35 +65,35 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 -- turn on code lens
-local codelens_augroup = vim.api.nvim_create_augroup("LSPCodeLens", { clear = true })
-
-vim.api.nvim_create_autocmd("LspAttach", {
-    group = codelens_augroup,
-    callback = function(event)
-        local bufnr = event.buf
-        local client = vim.lsp.get_client_by_id(event.data.client_id)
-
-        if client and client_supports_method(client, "textDocument/codeLens", bufnr) then
-            -- Refresh code lenses
-            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave", "TextChanged" }, {
-                group = codelens_augroup,
-                buffer = bufnr,
-                callback = function()
-                    -- Use defer to avoid refreshing too frequently
-                    vim.defer_fn(function()
-                        vim.lsp.codelens.refresh({ bufnr = bufnr })
-                    end, 100)
-                end,
-                desc = "Refresh LSP code lenses",
-            })
-
-            -- Initial refresh after a short delay
-            vim.defer_fn(function()
-                vim.lsp.codelens.refresh({ bufnr = bufnr })
-            end, 500)
-        end
-    end,
-})
+-- local codelens_augroup = vim.api.nvim_create_augroup("LSPCodeLens", { clear = true })
+--
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--     group = codelens_augroup,
+--     callback = function(event)
+--         local bufnr = event.buf
+--         local client = vim.lsp.get_client_by_id(event.data.client_id)
+--
+--         if client and client_supports_method(client, "textDocument/codeLens", bufnr) then
+--             -- Refresh code lenses
+--             vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave", "TextChanged" }, {
+--                 group = codelens_augroup,
+--                 buffer = bufnr,
+--                 callback = function()
+--                     -- Use defer to avoid refreshing too frequently
+--                     vim.defer_fn(function()
+--                         vim.lsp.codelens.refresh({ bufnr = bufnr })
+--                     end, 100)
+--                 end,
+--                 desc = "Refresh LSP code lenses",
+--             })
+--
+--             -- Initial refresh after a short delay
+--             vim.defer_fn(function()
+--                 vim.lsp.codelens.refresh({ bufnr = bufnr })
+--             end, 500)
+--         end
+--     end,
+-- })
 
 -- diagnostics
 vim.diagnostic.config({
