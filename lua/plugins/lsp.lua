@@ -125,49 +125,52 @@ vim.diagnostic.config({
 })
 
 return {
-    "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-        {
-            "mason-org/mason.nvim",
-            opts = {
-                registries = {
-                    "github:mason-org/mason-registry",
-                    "github:Crashdummyy/mason-registry",
-                },
+    {
+        "mason-org/mason.nvim",
+        opts = {
+            registries = {
+                "github:mason-org/mason-registry",
+                "github:Crashdummyy/mason-registry",
             },
         },
-        "mason-org/mason-lspconfig.nvim",
-        "WhoIsSethDaniel/mason-tool-installer.nvim",
-        "saghen/blink.cmp",
-        "ibhagwan/fzf-lua",
-        "stevearc/conform.nvim",
     },
-    config = function()
-        local capabilities = require("blink.cmp").get_lsp_capabilities()
+    {
+        "neovim/nvim-lspconfig",
+        event = { "BufReadPre", "BufNewFile" },
+        dependencies = {
+            "mason-org/mason.nvim",
+            "mason-org/mason-lspconfig.nvim",
+            "WhoIsSethDaniel/mason-tool-installer.nvim",
+            "saghen/blink.cmp",
+            "ibhagwan/fzf-lua",
+            "stevearc/conform.nvim",
+        },
+        config = function()
+            local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-        -- NOTE: add servers configurations as needed
-        local servers = {
-            clangd = require("plugins.lsp.clangd-lsp"),
-            lua_ls = require("plugins.lsp.lua_ls-lsp"),
-            roslyn = require("plugins.lsp.roslyn-lsp"),
-        }
+            -- NOTE: add servers configurations as needed
+            local servers = {
+                clangd = require("plugins.lsp.clangd-lsp"),
+                lua_ls = require("plugins.lsp.lua_ls-lsp"),
+                roslyn = require("plugins.lsp.roslyn-lsp"),
+            }
 
-        local ensure_installed = vim.tbl_keys(servers or {})
-        local tools = require("plugins.lsp.tools")
-        vim.list_extend(ensure_installed, tools)
-        require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+            local ensure_installed = vim.tbl_keys(servers or {})
+            local tools = require("plugins.lsp.tools")
+            vim.list_extend(ensure_installed, tools)
+            require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-        require("mason-lspconfig").setup({
-            ensure_installed = {},
-            automatic_installation = false,
-            handlers = {
-                function(server_name)
-                    local server = servers[server_name] or {}
-                    server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-                    vim.lsp.config(server_name, server)
-                end,
-            },
-        })
-    end,
+            require("mason-lspconfig").setup({
+                ensure_installed = {},
+                automatic_installation = false,
+                handlers = {
+                    function(server_name)
+                        local server = servers[server_name] or {}
+                        server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+                        vim.lsp.config(server_name, server)
+                    end,
+                },
+            })
+        end,
+    },
 }
