@@ -5,21 +5,6 @@ return {
         filewatchinh = "roslyn",
     },
     init = function()
-        vim.keymap.set("n", "<leader>fp", function()
-            if not vim.g.roslyn_nvim_selected_solution then
-                return vim.notify("No solution file found")
-            end
-
-            local projects = require("roslyn.sln.api").projects(vim.g.roslyn_nvim_selected_solution)
-            local files = vim.iter(projects)
-                :map(function(it)
-                    return vim.fs.dirname(it)
-                end)
-                :totable()
-
-            Snacks.picker.files({ dirs = files })
-        end, { desc = "[F]ind in [P]roject files" })
-
         -- ask for diagnostics every time we leave insert mode
         vim.api.nvim_create_autocmd({ "InsertLeave" }, {
             pattern = "*",

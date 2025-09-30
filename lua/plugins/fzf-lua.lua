@@ -8,56 +8,56 @@ return {
             function()
                 require("fzf-lua").files()
             end,
-            desc = "[F]ind [F]iles",
+            desc = "Fzf: [F]ind [F]iles",
         },
         {
             "<leader>fg",
             function()
                 require("fzf-lua").live_grep()
             end,
-            desc = "[F]ind by [G]repping",
+            desc = "Fzf: [F]ind by [G]repping",
         },
         {
             "<leader><leader>",
             function()
                 require("fzf-lua").buffers()
             end,
-            desc = "[ ] Find in Buffers",
+            desc = "Fzf: [ ] Find in Buffers",
         },
         {
             "<leader>ft",
             function()
                 vim.cmd("TodoFzfLua")
             end,
-            desc = "[F]ind [T]odos",
+            desc = "Fzf: [F]ind [T]odos",
         },
         {
             "<leader>fh",
             function()
                 require("fzf-lua").helptags()
             end,
-            desc = "[F]ind [H]elp",
+            desc = "Fzf: [F]ind [H]elp",
         },
         {
             "<leader>da",
             function()
                 require("fzf-lua").diagnostics_workspace()
             end,
-            desc = "Open [D]iagnostics [A]ll",
+            desc = "Fzf: Open [D]iagnostics [A]ll",
         },
         {
             "<leader>/",
             function()
                 require("fzf-lua").lgrep_curbuf()
             end,
-            desc = "[/] Live Grep Current Buffer",
+            desc = "Fzf: [/] Live Grep Current Buffer",
         },
         {
             "<leader>q",
             function()
                 require("fzf-lua").quickfix()
             end,
-            desc = "Open [Q]uickfix List",
+            desc = "Fzf: Open [Q]uickfix List",
         },
     },
 }

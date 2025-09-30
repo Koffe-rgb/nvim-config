@@ -21,14 +21,14 @@ return {
             function()
                 require("snacks").notifier.show_history()
             end,
-            desc = "Show [N]otification history",
+            desc = "Snacks: Show [N]otification history",
         },
         {
             "<leader>z",
             function()
                 require("snacks").zen.zen()
             end,
-            desc = "[Z]en mode",
+            desc = "Snacks: [Z]en mode",
         },
     },
 }
