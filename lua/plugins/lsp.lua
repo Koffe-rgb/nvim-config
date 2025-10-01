@@ -92,7 +92,11 @@ if vim.g.codelens_enabled then
             local bufnr = event.buf
             local client = vim.lsp.get_client_by_id(event.data.client_id)
 
-            if vim.g.codelens_enabled and client and client_supports_method(client, "textDocument/codeLens", bufnr) then
+            if
+                vim.g.codelens_enabled
+                and client
+                and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_codeLens, bufnr)
+            then
                 -- Refresh code lenses
                 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave", "TextChanged" }, {
                     group = codelens_augroup,
