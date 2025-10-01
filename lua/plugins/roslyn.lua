@@ -24,6 +24,7 @@ return {
         })
 
         -- remove unnecessary usings
+        -- (doesn't seem to work or I'm just skill issued)
         vim.api.nvim_create_user_command("CSFixUsings", function()
             local bufnr = vim.api.nvim_get_current_buf()
 

@@ -7,11 +7,15 @@ vim.g.have_nerd_font = true
 -- don't show mode (shown in status line)
 vim.o.showmode = false
 
+-- disable mouse support
 vim.o.mouse = ""
 
-vim.g.codelens_enabled = true
+-- custom options for lsps
+-- enable code lens: (usually it's reference count and etc)
+vim.g.codelens_enabled = false
+
+-- enable inlay hints
 vim.g.inlay_hints_enabled = true
-vim.g.inlay_hints_default_toggle = true
 
 -- line numbers
 vim.o.number = true

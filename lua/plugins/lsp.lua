@@ -59,7 +59,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
             and client
             and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf)
         then
-            vim.lsp.inlay_hint.enable(vim.g.inlay_hints_default_toggle, { bufnr = event.buf })
+            vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
             map("<leader>th", function()
                 local enabled = vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf })
                 vim.lsp.inlay_hint.enable(not enabled)
