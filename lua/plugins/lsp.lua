@@ -54,75 +54,66 @@ vim.api.nvim_create_autocmd("LspAttach", {
             })
         end
 
-        if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-            vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
-
+        if
+            vim.g.inlay_hints_enabled
+            and client
+            and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf)
+        then
+            vim.lsp.inlay_hint.enable(vim.g.inlay_hints_default_toggle, { bufnr = event.buf })
             map("<leader>th", function()
-                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
+                local enabled = vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf })
+                vim.lsp.inlay_hint.enable(not enabled)
             end, "[T]oggle Inlay [H]ints")
+        end
+
+        if
+            vim.g.codelens_enabled
+            and client
+            and client_supports_method(client, vim.lsp.protocol.Methods.codeLens_resolve, event.buf)
+        then
+            map("<leader>cl", function()
+                vim.lsp.codelens.run()
+            end, "[C]ode [L]ens Action")
         end
     end,
 })
 
 -- turn on code lens
--- local codelens_augroup = vim.api.nvim_create_augroup("LSPCodeLens", { clear = true })
---
--- vim.api.nvim_create_autocmd("LspAttach", {
---     group = codelens_augroup,
---     callback = function(event)
---         local bufnr = event.buf
---         local client = vim.lsp.get_client_by_id(event.data.client_id)
---
---         if client and client_supports_method(client, "textDocument/codeLens", bufnr) then
---             -- Refresh code lenses
---             vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave", "TextChanged" }, {
---                 group = codelens_augroup,
---                 buffer = bufnr,
---                 callback = function()
---                     -- Use defer to avoid refreshing too frequently
---                     vim.defer_fn(function()
---                         vim.lsp.codelens.refresh({ bufnr = bufnr })
---                     end, 100)
---                 end,
---                 desc = "Refresh LSP code lenses",
---             })
---
---             -- Initial refresh after a short delay
---             vim.defer_fn(function()
---                 vim.lsp.codelens.refresh({ bufnr = bufnr })
---             end, 500)
---         end
---     end,
--- })
+if vim.g.codelens_enabled then
+    local codelens_augroup = vim.api.nvim_create_augroup("LSPCodeLens", { clear = true })
 
--- diagnostics
-vim.diagnostic.config({
-    severity_sort = true,
-    float = { border = "rounded", source = "if_many" },
-    underline = { severity = vim.diagnostic.severity.ERROR },
-    signs = vim.g.have_nerd_font and {
-        text = {
-            [vim.diagnostic.severity.ERROR] = "󰅚 ",
-            [vim.diagnostic.severity.WARN] = "󰀪 ",
-            [vim.diagnostic.severity.INFO] = "󰋽 ",
-            [vim.diagnostic.severity.HINT] = "󰌶 ",
-        },
-    } or {},
-    -- Disabled for tiny-inline-diagnostics
-    virtual_text = {
-        source = "if_many",
-        spacing = 2,
-        format = function(diagnostic)
-            local diagnostic_message = {
-                [vim.diagnostic.severity.ERROR] = diagnostic.message,
-                [vim.diagnostic.severity.WARN] = diagnostic.message,
-                [vim.diagnostic.severity.INFO] = diagnostic.message,
-                [vim.diagnostic.severity.HINT] = diagnostic.message,
-            }
-            return diagnostic_message[diagnostic.severity]
+    vim.api.nvim_create_autocmd("LspAttach", {
+        group = codelens_augroup,
+        callback = function(event)
+            if not vim.g.codelens_enabled then
+                return
+            end
+
+            local bufnr = event.buf
+            local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+            if vim.g.codelens_enabled and client and client_supports_method(client, "textDocument/codeLens", bufnr) then
+                -- Refresh code lenses
+                vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave", "TextChanged" }, {
+                    group = codelens_augroup,
+                    buffer = bufnr,
+                    callback = function()
+                        -- Use defer to avoid refreshing too frequently
+                        vim.defer_fn(function()
+                            vim.lsp.codelens.refresh({ bufnr = bufnr })
+                        end, 100)
+                    end,
+                    desc = "Refresh LSP code lenses",
+                })
+
+                -- Initial refresh after a short delay
+                vim.defer_fn(function()
+                    vim.lsp.codelens.refresh({ bufnr = bufnr })
+                end, 500)
+            end
         end,
-    },
-})
+    })
+end
 
 return {
     {
@@ -149,28 +140,38 @@ return {
             local capabilities = require("blink.cmp").get_lsp_capabilities()
 
             -- NOTE: add servers configurations as needed
-            local servers = {
+            local server_configurations = {
                 clangd = require("plugins.lsp.clangd-lsp"),
                 lua_ls = require("plugins.lsp.lua_ls-lsp"),
                 roslyn = require("plugins.lsp.roslyn-lsp"),
             }
 
-            local ensure_installed = vim.tbl_keys(servers or {})
+            local ensure_installed = vim.tbl_keys(server_configurations or {})
             local tools = require("plugins.lsp.tools")
             vim.list_extend(ensure_installed, tools)
             require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-            require("mason-lspconfig").setup({
-                ensure_installed = {},
-                automatic_installation = false,
-                handlers = {
-                    function(server_name)
-                        local server = servers[server_name] or {}
-                        server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-                        vim.lsp.config(server_name, server)
-                    end,
-                },
-            })
+            for _, lang in ipairs(vim.tbl_keys(server_configurations)) do
+                local configuration = server_configurations[lang] or {}
+                configuration.capabilities =
+                    vim.tbl_deep_extend("force", {}, capabilities, configuration.capabilities or {})
+                vim.lsp.config(lang, configuration)
+                vim.lsp.enable(lang)
+            end
+
+            -- require("mason-lspconfig").setup({
+            --     ensure_installed = {},
+            --     automatic_installation = false,
+            --     handlers = {
+            --         function(server_name)
+            --             local server = servers[server_name] or {}
+            --             server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+            --             require("lspconfig")[server_name].setup(server)
+            --             vim.lsp.config(server_name)
+            --             -- vim.lsp.config(server_name, server)
+            --         end,
+            --     },
+            -- })
         end,
     },
 }

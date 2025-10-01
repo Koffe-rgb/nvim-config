@@ -1,6 +1,8 @@
 return {
     -- cmd = { ... },
-    -- filetypes = { ... },
+    filetypes = {
+        "lua",
+    },
     -- capabilities = {},
     settings = {
         Lua = {
@@ -16,9 +18,7 @@ return {
                 enable = true,
             },
             hint = {
-                arrayIndex = "Enable",
                 enable = true,
-                setType = true,
             },
             language = {
                 completeAnnotation = true,
@@ -27,8 +27,6 @@ return {
             signatureHelp = {
                 enable = true,
             },
-            -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-            -- diagnostics = { disable = { 'missing-fields' } },
         },
     },
 }
