@@ -15,7 +15,7 @@ vim.keymap.set({ "n", "i", "v" }, "<up>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<down>", "<Nop>")
 
 -- build project with :make
-vim.keymap.set("n", "<leader>bb", "<cmd>make<CR>", { desc = "Build project" })
+vim.keymap.set("n", "<C-b>", "<cmd>make<CR>", { desc = "Build project" })
 
 vim.keymap.set("n", "<M-j>", "<cmd>cnext<CR>", { desc = "Next item on quickfix list" })
 vim.keymap.set("n", "<M-k>", "<cmd>cprev<CR>", { desc = "Next item on quickfix list" })

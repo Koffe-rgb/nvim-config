@@ -155,27 +155,13 @@ return {
             vim.list_extend(ensure_installed, tools)
             require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-            for _, lang in ipairs(vim.tbl_keys(server_configurations)) do
+            for _, lang in ipairs(vim.tbl_keys(server_configurations or {})) do
                 local configuration = server_configurations[lang] or {}
                 configuration.capabilities =
                     vim.tbl_deep_extend("force", {}, capabilities, configuration.capabilities or {})
                 vim.lsp.config(lang, configuration)
                 vim.lsp.enable(lang)
             end
-
-            -- require("mason-lspconfig").setup({
-            --     ensure_installed = {},
-            --     automatic_installation = false,
-            --     handlers = {
-            --         function(server_name)
-            --             local server = servers[server_name] or {}
-            --             server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            --             require("lspconfig")[server_name].setup(server)
-            --             vim.lsp.config(server_name)
-            --             -- vim.lsp.config(server_name, server)
-            --         end,
-            --     },
-            -- })
         end,
     },
 }
