@@ -141,26 +141,29 @@ return {
             "stevearc/conform.nvim",
         },
         config = function()
-            local capabilities = require("blink.cmp").get_lsp_capabilities()
-
             -- NOTE: add servers configurations as needed
-            local server_configurations = {
+            local servers = {
                 clangd = require("plugins.lsp.clangd-lsp"),
                 lua_ls = require("plugins.lsp.lua_ls-lsp"),
                 roslyn = require("plugins.lsp.roslyn-lsp"),
             }
 
-            local ensure_installed = vim.tbl_keys(server_configurations or {})
+            -- extend server capabilities
+            local blink = require("blink.cmp")
+            for name, config in pairs(servers) do
+                config.capabilities = blink.get_lsp_capabilities(config.capabilities)
+            end
+
+            -- install all servers and tools
+            local ensure_installed = vim.tbl_keys(servers or {})
             local tools = require("plugins.lsp.tools")
             vim.list_extend(ensure_installed, tools)
             require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-            for _, lang in ipairs(vim.tbl_keys(server_configurations or {})) do
-                local configuration = server_configurations[lang] or {}
-                configuration.capabilities =
-                    vim.tbl_deep_extend("force", {}, capabilities, configuration.capabilities or {})
-                vim.lsp.config(lang, configuration)
-                vim.lsp.enable(lang)
+            -- configure and enable servers
+            for name, config in pairs(servers) do
+                vim.lsp.config(name, config)
+                vim.lsp.enable(name)
             end
         end,
     },

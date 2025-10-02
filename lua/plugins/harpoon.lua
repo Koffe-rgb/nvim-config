@@ -36,28 +36,28 @@ return {
             desc = "Harpoon: Previous item",
         },
         {
-            "<leader>1",
+            "<M-1>",
             function()
                 require("harpoon"):list():select(1)
             end,
             desc = "Harpoon: Select [1]",
         },
         {
-            "<leader>2",
+            "<M-2>",
             function()
                 require("harpoon"):list():select(2)
             end,
             desc = "Harpoon: Select [2]",
         },
         {
-            "<leader>3",
+            "<M-3>",
             function()
                 require("harpoon"):list():select(3)
             end,
             desc = "Harpoon: Select [3]",
         },
         {
-            "<leader>4",
+            "<M-4>",
             function()
                 require("harpoon"):list():select(4)
             end,
