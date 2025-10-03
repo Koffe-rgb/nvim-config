@@ -1,9 +1,7 @@
 return {
-    -- cmd = { ... },
     filetypes = {
         "lua",
     },
-    -- capabilities = {},
     settings = {
         Lua = {
             completion = {
