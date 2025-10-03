@@ -9,6 +9,10 @@ return {
                 "┆",
                 "┊",
             },
+            highlight = "IblScope",
+        },
+        scope = {
+            enabled = false,
         },
     },
 }
