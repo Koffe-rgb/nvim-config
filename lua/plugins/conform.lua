@@ -7,11 +7,12 @@ return {
         require("conform").setup({
             async = true,
             formatters_by_ft = {
-                cs = { "csharpier_koffe" },
+                xml = { "csharpier" },
+                cs = { "csharpier" },
                 lua = { "stylua" },
             },
             formatters = {
-                csharpier_koffe = {
+                csharpier = {
                     command = "csharpier",
                     args = {
                         "format",

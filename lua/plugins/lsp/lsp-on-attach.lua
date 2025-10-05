@@ -80,7 +80,9 @@ return function(client, buf)
     map(buf, "<leader>gi", require("fzf-lua").lsp_implementations, "[G]oto [I]mplementation")
     map(buf, "<leader>gd", require("fzf-lua").lsp_definitions, "[G]oto [D]efinition")
     map(buf, "<leader>gt", require("fzf-lua").lsp_typedefs, "[G]oto [T]ype Definition")
-    map(buf, "K", vim.lsp.buf.hover, "Hover Documentation")
+    map(buf, "K", function()
+        vim.lsp.buf.hover({ border = "single" })
+    end, "Hover Documentation")
 
     local document_highlights = true
         and client
