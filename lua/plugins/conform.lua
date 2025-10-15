@@ -10,6 +10,8 @@ return {
                 xml = { "csharpier" },
                 cs = { "csharpier" },
                 lua = { "stylua" },
+                sh = { "shfmt" },
+                bash = { "shfmt" },
             },
             formatters = {
                 csharpier = {
@@ -19,6 +21,13 @@ return {
                         "--write-stdout",
                     },
                     to_stdin = true,
+                },
+                shfmt = {
+                    command = "shfmt",
+                    args = {
+                        "-i",
+                        "4",
+                    },
                 },
             },
             format_on_save = {

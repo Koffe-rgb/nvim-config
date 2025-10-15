@@ -10,6 +10,12 @@ return {
         },
     },
     {
+        "mason-org/mason-lspconfig.nvim",
+    },
+    {
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
+    },
+    {
         "neovim/nvim-lspconfig",
         event = { "BufReadPre", "BufNewFile" },
         dependencies = {
@@ -26,6 +32,7 @@ return {
                 clangd = require("plugins.lsp.clangd-lsp-configuration"),
                 lua_ls = require("plugins.lsp.lua-lsp-configuration"),
                 roslyn = require("plugins.lsp.roslyn-lsp-configuration"),
+                bashls = {},
             }
 
             -- extend server capabilities
